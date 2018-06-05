@@ -28,7 +28,11 @@ export class OpenSSLTextDocumentContentProvider implements vscode.TextDocumentCo
                 return execSync('openssl x509 -text -noout', {
                     input: text
                 }).toString('utf-8');
-            }
+            } else if (text.startsWith('-----BEGIN CERTIFICATE REQUEST-----') || text.startsWith('-----BEGIN NEW CERTIFICATE REQUEST-----')) {
+                return execSync('openssl req -text -noout', {
+                    input: text
+                }).toString('utf-8');				
+			}
             return 'Preview not available';
         }
 
