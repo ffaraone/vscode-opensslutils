@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "opensslutils" is now active!');
 
-    let previewUri = vscode.Uri.parse('openssl-preview://authority/openssl-preview');
+    let previewUri = vscode.Uri.parse('openssl-preview://authority/OpenSSL%20Preview');
 
     let provider = new OpenSSLTextDocumentContentProvider();
 	let registration = vscode.Disposable.from(vscode.workspace.registerTextDocumentContentProvider('openssl-preview', provider));
