@@ -96,11 +96,17 @@ export function activate(context: vscode.ExtensionContext) {
 		html = html.replace('${ext_css_uri}', extCssUri.toString());
 		panel.webview.html = html;
 		panel.webview.onDidReceiveMessage((message) => {
-			vscode.window.showWorkspaceFolderPick().then((folder) => {
-				//vscode.workspace.findFiles()
-				console.log(folder);
-				panel.dispose();
+			vscode.workspace.openTextDocument({
+				content: 'my generated text'
+			}).then(doc => {
+				vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
 			});
+			//panel.dispose();
+			// vscode.window.showWorkspaceFolderPick().then((folder) => {
+			// 	//vscode.workspace.findFiles()
+			// 	console.log(folder);
+			// 	panel.dispose();
+			// });
 		});
 	}));
 }
