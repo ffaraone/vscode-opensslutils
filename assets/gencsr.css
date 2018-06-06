@@ -1,0 +1,51 @@
+.pure-button-primary {
+    background-color: #2375d1;
+}
+
+body.vscode-light h1 {
+    color: black;
+}
+
+body.vscode-dark h1 {
+    color: white;
+}
+
+body.vscode-dark .pure-form .opensslutils-input {
+    background: transparent;
+    outline: none;
+    color: white;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 1px solid white; 
+}
+
+body.vscode-dark .pure-form select.opensslutils-input {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+}
+
+
+
+body.vscode-light .pure-form .opensslutils-input {
+    background: transparent;
+    outline: none;
+    color: black;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 1px solid black; 
+}
+
+body.vscode-light .pure-form select.opensslutils-input {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+}
+
+body.vscode-high-contrast h1 {
+    color: orange;
+}
