@@ -26,29 +26,14 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	function certConverter(infile: string, to: string) {
-		const converter: any = converters['to'];
-		const folders:Array<string> = infile.split(path.sep);
-		const filename:string|undefined = folders.pop();
-		if (!filename) {
-			return;
-		}
-		const basePath = path.join(path.sep, ...folders);
-		const lf:string = filename.toLocaleLowerCase();
-		let outfile = '';
-		let hasExt: boolean = false;
-		for (const ext of converter.srcext) {
-			hasExt = hasExt || lf.endsWith(ext);
-		}
-		if (hasExt) {
-			const nameParts = filename.split('.');
-			nameParts.pop();
-			outfile = path.join(basePath, nameParts.join('.') + converter.dstext);
-		} else {
-			outfile = path.join(basePath, filename + converter.dstext);
-		}
+		const converter: any = converters[to];
+		const parsed = path.parse(infile);
+		
+		let outfile = converter.srcext.includes(parsed.ext) ? path.join(parsed.dir, parsed.name + converter.dstext) : path.join(parsed.dir, parsed.base + converter.dstext);
+
 		converter.handler(infile, outfile)
 			.then(() => {
-				vscode.window.showInformationMessage(`The file ${filename} has been successfully converted.`);
+				vscode.window.showInformationMessage(`The file ${parsed.base} has been successfully converted.`);
 			})
 			.catch((err: any) => {
 				vscode.window.showErrorMessage(err.message);
@@ -56,7 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 
-    let previewUri = vscode.Uri.parse('openssl-preview://authority/OpenSSL%20Preview');
+
+    const previewUri = vscode.Uri.parse('openssl-preview://authority/OpenSSL%20Preview');
 
     let provider = new OpenSSLTextDocumentContentProvider();
 	context.subscriptions.push(vscode.Disposable.from(vscode.workspace.registerTextDocumentContentProvider('openssl-preview', provider)));
@@ -69,19 +55,33 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.showOpenSSLPreview', () => {
         return vscode.workspace.openTextDocument(previewUri).then(doc => {
-            vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
+            vscode.window.showTextDocument(doc, {
+				preview: false,
+				viewColumn: vscode.ViewColumn.Two
+			});
         }, (reason) => {
             vscode.window.showErrorMessage(reason);
         });
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.convertCrtToPem', (fileObj) => {
-		certConverter(fileObj.path, 'pem');
+		try {
+			certConverter(fileObj.path, 'pem');
+		} catch (e) {
+			console.log(e);
+		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.convertPemToCrt', (fileObj) => {
-		certConverter(fileObj.path, 'der');
+		try {
+			certConverter(fileObj.path, 'der');
+		} catch (e) {
+			console.log(e);
+		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.generateKeyCsr', () => {
-
+		const editorOptions = {
+			preview: false,
+			viewColumn: vscode.ViewColumn.Active
+		};
 		let pureCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'pure-min.css'));
 		pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
 
@@ -96,17 +96,24 @@ export function activate(context: vscode.ExtensionContext) {
 		html = html.replace('${ext_css_uri}', extCssUri.toString());
 		panel.webview.html = html;
 		panel.webview.onDidReceiveMessage((message) => {
-			vscode.workspace.openTextDocument({
-				content: 'my generated text'
-			}).then(doc => {
-				vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
-			});
-			//panel.dispose();
-			// vscode.window.showWorkspaceFolderPick().then((folder) => {
-			// 	//vscode.workspace.findFiles()
-			// 	console.log(folder);
-			// 	panel.dispose();
-			// });
+			// validate input
+			openssl.genKeyCsr(message)
+				.then((data) => {
+					vscode.workspace.openTextDocument({
+						content: data.key
+					}).then(doc => {
+						vscode.window.showTextDocument(doc, editorOptions);
+					});
+					vscode.workspace.openTextDocument({
+						content: data.csr
+					}).then(doc => {
+						vscode.window.showTextDocument(doc, editorOptions);
+					});
+					panel.dispose();
+				})
+				.catch((err: any) => {
+					vscode.window.showErrorMessage(err.message);
+				});
 		});
 	}));
 }
