@@ -24,6 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
 		viewColumn: vscode.ViewColumn.Active
 	};
 
+	let currentPreviewDocument: vscode.TextDocument | null = null;
+
 	function certConverter(infile: string, to: string) {
 		const converter: any = converters[to];
 		const parsed = path.parse(infile);
@@ -53,9 +55,18 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
 		if (vscode.window.activeTextEditor && e && e.document === vscode.window.activeTextEditor.document) {
+			if (e.document === currentPreviewDocument) {
+				return;
+			}
 			provider.update(previewUri);
 		}
 	});
+	vscode.workspace.onDidCloseTextDocument((e: vscode.TextDocument) => {
+		if (e === currentPreviewDocument) {
+			currentPreviewDocument = null;
+		}
+	});
+	
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.generatePrivKey', () => {
 		const keyLengths = [
@@ -111,6 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.showOpenSSLPreview', () => {
         return vscode.workspace.openTextDocument(previewUri).then(doc => {
+			currentPreviewDocument = doc;
             vscode.window.showTextDocument(doc, {
 				preserveFocus: true,
 				preview: false,
