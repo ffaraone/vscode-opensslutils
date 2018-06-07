@@ -52,10 +52,16 @@ export function activate(context: vscode.ExtensionContext) {
 			provider.update(previewUri);
 		}
 	});
+	vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+		if (vscode.window.activeTextEditor && e && e.document === vscode.window.activeTextEditor.document) {
+			provider.update(previewUri);
+		}
+	});
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.showOpenSSLPreview', () => {
         return vscode.workspace.openTextDocument(previewUri).then(doc => {
             vscode.window.showTextDocument(doc, {
+				preserveFocus: true,
 				preview: false,
 				viewColumn: vscode.ViewColumn.Two
 			});
