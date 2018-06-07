@@ -3,13 +3,7 @@ import { OpenSSLTextDocumentContentProvider } from './lib/providers';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-// import { openssl } from './lib/openssl';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
 	const converters: any = {
@@ -23,6 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
 			dstext: '.der',
 			handler: openssl.pemToCrt
 		}
+	};
+
+	const editorOptions = {
+		preview: false,
+		viewColumn: vscode.ViewColumn.Active
 	};
 
 	function certConverter(infile: string, to: string) {
@@ -58,6 +57,58 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.generatePrivKey', () => {
+		const keyLengths = [
+			{
+				label: 'RSA 1024 bits',
+				size: 1024,
+				algo: 'rsa'
+			},
+			{
+				label: 'RSA 2048 bits',
+				size: 2048,
+				algo: 'rsa'
+			},
+			{
+				label: 'RSA 4096 bits',
+				size: 4096,
+				algo: 'rsa'
+			},
+			{
+				label: 'DSA 1024 bits',
+				size: 1024,
+				algo: 'dsa'
+			},
+			{
+				label: 'DSA 2048 bits',
+				size: 2048,
+				algo: 'dsa'
+			},
+			{
+				label: 'DSA 4096 bits',
+				size: 4096,
+				algo: 'dsa'
+			}
+		];
+		vscode.window.showQuickPick(keyLengths)
+			.then((value: any | undefined) => {
+				if (value === undefined) {
+					return;
+				}
+				openssl.genPrivKey(value.size, value.algo).then(data => {
+					vscode.workspace.openTextDocument({
+						content: data
+					}).then(doc => {
+						vscode.window.showTextDocument(doc, editorOptions);
+					});
+				})
+				.catch((err: any) => {
+					vscode.window.showErrorMessage(err.message);
+				});
+			});
+	}));
+
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.showOpenSSLPreview', () => {
         return vscode.workspace.openTextDocument(previewUri).then(doc => {
             vscode.window.showTextDocument(doc, {
@@ -84,10 +135,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.generateKeyCsr', () => {
-		const editorOptions = {
-			preview: false,
-			viewColumn: vscode.ViewColumn.Active
-		};
 		let pureCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'pure-min.css'));
 		pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
 

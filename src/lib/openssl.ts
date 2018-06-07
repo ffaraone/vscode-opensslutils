@@ -34,6 +34,24 @@ function pemToCrt(infile:string, outfile:string): Promise<any> {
     });
 }
 
+function genPrivKey(size: number, algo: string): Promise<any> {
+    let cmd = 'openssl';
+    if (algo === 'rsa') {
+        cmd += ` genrsa ${size}`;
+    } else {
+        cmd += ` dsaparam -genkey ${size}`;
+    }
+    return new Promise((resolve, reject) => {
+        exec(cmd, (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(stdout);
+        });
+    });
+}
+
 function genKeyCsr(data:any): Promise<any> {
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
@@ -86,7 +104,8 @@ function genKeyCsr(data:any): Promise<any> {
 const openssl = {
     crtToPem: crtToPem,
     pemToCrt: pemToCrt,
-    genKeyCsr: genKeyCsr
+    genKeyCsr: genKeyCsr,
+    genPrivKey: genPrivKey
 };
 
 export default openssl;

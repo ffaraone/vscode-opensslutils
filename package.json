@@ -14,7 +14,8 @@
         "onCommand:extension.showOpenSSLPreview",
         "onCommand:extension.convertCrtToPem",
         "onCommand:extension.convertPemToCrt",
-        "onCommand:extension.generateKeyCsr"
+        "onCommand:extension.generateKeyCsr",
+        "onCommand:extension.generatePrivKey"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -26,7 +27,12 @@
             },
             {
                 "command": "extension.generateKeyCsr",
-                "title": "Generate Csr",
+                "title": "Generate Private Key end CSR",
+                "category": "OpenSSL"
+            },
+            {
+                "command": "extension.generatePrivKey",
+                "title": "Generate Private Key",
                 "category": "OpenSSL"
             },
             {
