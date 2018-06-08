@@ -11,59 +11,71 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.showOpenSSLPreview",
-        "onCommand:extension.convertCrtToPem",
-        "onCommand:extension.convertPemToCrt",
-        "onCommand:extension.generateKeyCsr",
-        "onCommand:extension.generatePrivKey"
+        "onCommand:opensslutils.showOpenSSLPreview",
+        "onCommand:opensslutils.convertCrtToPem",
+        "onCommand:opensslutils.convertPemToCrt",
+        "onCommand:opensslutils.generateKeyCsr",
+        "onCommand:opensslutils.generatePrivKey",
+        "onCommand:opensslutils.generateSelfSignedCert",
+        "onCommand:opensslutils.generatePkcs12"
     ],
     "main": "./out/extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.showOpenSSLPreview",
+                "command": "opensslutils.showOpenSSLPreview",
                 "title": "Show OpenSSL preview",
                 "category": "OpenSSL"
             },
             {
-                "command": "extension.generateKeyCsr",
+                "command": "opensslutils.generateKeyCsr",
                 "title": "Generate Private Key end CSR",
                 "category": "OpenSSL"
             },
             {
-                "command": "extension.generatePrivKey",
+                "command": "opensslutils.generateSelfSignedCert",
+                "title": "Generate self-signed Certificate and Key",
+                "category": "OpenSSL"
+            },
+            {
+                "command": "opensslutils.generatePkcs12",
+                "title": "Generate PKCS12",
+                "category": "OpenSSL"
+            },
+            {
+                "command": "opensslutils.generatePrivKey",
                 "title": "Generate Private Key",
                 "category": "OpenSSL"
             },
             {
-                "command": "extension.convertCrtToPem",
+                "command": "opensslutils.convertCrtToPem",
                 "title": "OpenSSL: Crt to Pem"
             },
             {
-                "command": "extension.convertPemToCrt",
+                "command": "opensslutils.convertPemToCrt",
                 "title": "OpenSSL: Pem to Crt"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
-                    "command": "extension.convertCrtToPem",
+                    "command": "opensslutils.convertCrtToPem",
                     "when": "1 == 2"
                 },
                 {
-                    "command": "extension.convertPemToCrt",
+                    "command": "opensslutils.convertPemToCrt",
                     "when": "1 == 2"
                 }
             ],
             "explorer/context": [
                 {
                     "when": "!explorerResourceIsFolder",
-                    "command": "extension.convertCrtToPem",
+                    "command": "opensslutils.convertCrtToPem",
                     "group": "z_openssl@1"
                 },
                 {
                     "when": "!explorerResourceIsFolder",
-                    "command": "extension.convertPemToCrt",
+                    "command": "opensslutils.convertPemToCrt",
                     "group": "z_openssl@2"
                 }
             ]

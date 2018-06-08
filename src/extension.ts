@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 
-	context.subscriptions.push(vscode.commands.registerCommand('extension.generatePrivKey', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.generatePrivKey', () => {
 		const keyLengths = [
 			{
 				label: 'RSA 1024 bits',
@@ -120,7 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 
-	context.subscriptions.push(vscode.commands.registerCommand('extension.showOpenSSLPreview', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.showOpenSSLPreview', () => {
         return vscode.workspace.openTextDocument(previewUri).then(doc => {
 			currentPreviewDocument = doc;
             vscode.window.showTextDocument(doc, {
@@ -132,25 +132,25 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(reason);
         });
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.convertCrtToPem', (fileObj) => {
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.convertCrtToPem', (fileObj) => {
 		try {
 			certConverter(fileObj.path, 'pem');
 		} catch (e) {
 			console.log(e);
 		}
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.convertPemToCrt', (fileObj) => {
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.convertPemToCrt', (fileObj) => {
 		try {
 			certConverter(fileObj.path, 'der');
 		} catch (e) {
 			console.log(e);
 		}
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.generateKeyCsr', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.generateKeyCsr', () => {
 		let pureCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'pure-min.css'));
 		pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
 
-		let extCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'gencsr.css'));
+		let extCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'opensslutils.css'));
 		extCssUri = extCssUri.with({scheme: 'vscode-resource'});
 		
 		let panel = vscode.window.createWebviewPanel('openssl gen', 'Generate CSR', vscode.ViewColumn.One, {
@@ -179,6 +179,116 @@ export function activate(context: vscode.ExtensionContext) {
 				.catch((err: any) => {
 					vscode.window.showErrorMessage(err.message);
 				});
+		});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.generateSelfSignedCert', () => {
+		let pureCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'pure-min.css'));
+		pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
+
+		let extCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'opensslutils.css'));
+		extCssUri = extCssUri.with({scheme: 'vscode-resource'});
+		
+		let panel = vscode.window.createWebviewPanel('openssl gen', 'Generate self-signed Certificate and Key', vscode.ViewColumn.One, {
+			enableScripts: true
+		});
+		let html = fs.readFileSync(path.join(context.extensionPath, 'assets', 'gencert.html')).toString();
+		html = html.replace('${pure_css_uri}', pureCssUri.toString());
+		html = html.replace('${ext_css_uri}', extCssUri.toString());
+		panel.webview.html = html;
+		panel.webview.onDidReceiveMessage((message) => {
+			// validate input
+			openssl.genSelfSignedCert(message)
+				.then((data) => {
+					vscode.workspace.openTextDocument({
+						content: data.key
+					}).then(doc => {
+						vscode.window.showTextDocument(doc, editorOptions);
+					});
+					vscode.workspace.openTextDocument({
+						content: data.pem
+					}).then(doc => {
+						vscode.window.showTextDocument(doc, editorOptions);
+					});
+					panel.dispose();
+				})
+				.catch((err: any) => {
+					vscode.window.showErrorMessage(err.message);
+				});
+		});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('opensslutils.generatePkcs12', () => {
+		if (!vscode.workspace.workspaceFolders) {
+			return;
+		}
+		const folder = vscode.workspace.workspaceFolders[0].uri;
+		let pureCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'pure-min.css'));
+		pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
+
+		let extCssUri = vscode.Uri.file(path.join(context.extensionPath, 'assets', 'opensslutils.css'));
+		extCssUri = extCssUri.with({scheme: 'vscode-resource'});
+		
+		let panel = vscode.window.createWebviewPanel('openssl gen', 'Generate PKCS#12', vscode.ViewColumn.One, {
+			enableScripts: true
+		});
+		let html = fs.readFileSync(path.join(context.extensionPath, 'assets', 'genp12.html')).toString();
+		html = html.replace('${pure_css_uri}', pureCssUri.toString());
+		html = html.replace('${ext_css_uri}', extCssUri.toString());
+		panel.webview.html = html;
+		panel.webview.onDidReceiveMessage((message) => {
+			if (message.command.startsWith('choose-')) {
+				const what = message.command.substring(7);
+				vscode.window.showOpenDialog({
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: folder,
+					openLabel: 'Choose',
+				}).then((res: vscode.Uri[] | undefined) => {
+					if (res) {
+						console.log(res);
+						panel.webview.postMessage({
+							command: `set-${what}`,
+							file: res[0].path
+						});
+					}
+				});
+			}
+			if (message.command === 'export') {
+				vscode.window.showSaveDialog({
+					defaultUri: folder,
+					saveLabel: 'Export'
+				}).then((res) => {
+					if (res) {
+						message['p12'] = res.path;
+						openssl.genP12(message).then(() => {
+							const fileinfo = path.parse(res.path);
+							vscode.window.showInformationMessage(`The p12 ${fileinfo.base} has beem exported successfully`);
+							panel.dispose();
+						})
+						.catch((err:any) => {
+							vscode.window.showErrorMessage(err.message);
+						});
+					}
+				});
+			}
+			// validate input
+			// openssl.genSelfSignedCert(message)
+			// 	.then((data) => {
+			// 		vscode.workspace.openTextDocument({
+			// 			content: data.key
+			// 		}).then(doc => {
+			// 			vscode.window.showTextDocument(doc, editorOptions);
+			// 		});
+			// 		vscode.workspace.openTextDocument({
+			// 			content: data.pem
+			// 		}).then(doc => {
+			// 			vscode.window.showTextDocument(doc, editorOptions);
+			// 		});
+			// 		panel.dispose();
+			// 	})
+			// 	.catch((err: any) => {
+			// 		vscode.window.showErrorMessage(err.message);
+			// 	});
 		});
 	}));
 }

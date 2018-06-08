@@ -52,6 +52,25 @@ function genPrivKey(size: number, algo: string): Promise<any> {
     });
 }
 
+function genP12(data: any): Promise<any> {
+    let cmd = `openssl pkcs12 -export -out ${data.p12} -inkey ${data.key} -in ${data.cert} -password pass:${data.pwd}`;
+    if (data.bundle) {
+        cmd += ` -certfile ${data.bundle}`;
+    }
+    if (data.alias) {
+        cmd += ` -name "${data.alias}"`;
+    }
+    return new Promise((resolve, reject) => {
+        exec(cmd, (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
+    });
+}
+
 function genKeyCsr(data:any): Promise<any> {
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
@@ -101,11 +120,62 @@ function genKeyCsr(data:any): Promise<any> {
     });
 }
 
+function genSelfSignedCert(data:any): Promise<any> {
+    const rndStr = crypto.randomBytes(10).toString('hex');
+    const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
+    const tmpPem = path.join(os.tmpdir(), `op_${rndStr}.pem`);
+
+    let subj = `/CN=${data.commonName}/C=${data.country}`;
+    if (data.state) {
+        subj += `/ST=${data.state}`;
+    }
+    if (data.locality) {
+        subj += `/localityName=${data.locality}`;
+    }
+    if (data.organization) {
+        subj += `/O=${data.organization}`;
+    }
+    if (data.organizationalUnit) {
+        subj += `/OU=${data.organizationalUnit}`;
+    }
+    if (data.email) {
+        subj += `/emailAddress=${data.email}`;
+    } 
+    subj = '"' + subj + '"';
+
+    return new Promise((resolve, reject) => {
+        const cmd = `openssl req -x509 ${data.hashAlgo} -nodes -days ${data.days} -newkey rsa:${data.keyLength} -keyout ${tmpKey} -out ${tmpPem} -subj ${subj}`;
+        exec(cmd, (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const output = {
+                key: fs.readFileSync(tmpKey).toString(),
+                pem: fs.readFileSync(tmpPem).toString()
+            };
+            resolve(output);
+            fs.unlink(tmpKey, (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+            fs.unlink(tmpPem, (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        });
+    });
+}
+
 const openssl = {
     crtToPem: crtToPem,
     pemToCrt: pemToCrt,
     genKeyCsr: genKeyCsr,
-    genPrivKey: genPrivKey
+    genPrivKey: genPrivKey,
+    genSelfSignedCert: genSelfSignedCert,
+    genP12: genP12
 };
 
 export default openssl;
