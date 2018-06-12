@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="${bs_css_uri}">
+    <link rel="stylesheet" type="text/css" href="${ext_css_uri}">
+    <script type="text/javascript" src="${jquery_js_uri}"></script>
+    <script type="text/javascript" src="${bs_js_uri}"></script>
+    <script type="text/javascript" src="${ext_js_uri}"></script>
+    <title>Csr Generator</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Generate PKCS#12</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">&nbsp;</div>
+        </div>
+        <form id="form-p12" class="need-validation" novalidate>
+            <div class="form-group row">
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="key" type="text" placeholder="Key" readonly required>
+                    <div class="invalid-feedback">
+                            Please choose the private key file.
+                        </div>
+                    <label for="key">Key</label>
+                </div>
+
+                <div class="col-2">
+                    <button id="btn-key" class="btn btn-sm btn-outline-primary" type="button">Browse</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="cert" type="text" placeholder="Certificate" readonly required>
+                    <div class="invalid-feedback">
+                            Please choose the certificate file.
+                    </div>
+                    <label for="cert">Certificate</label>
+                </div>
+                <div class="col-2">
+                    <button  id="btn-cert" class="btn btn-sm btn-outline-primary" type="button">Browse</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="bundle" type="text" placeholder="CA's certificates" readonly>
+                    <label for="bundle">CA's certificates</label>
+                </div>
+                <div class="col-2">
+                    <button  id="btn-bundle" class="btn btn-sm btn-outline-primary" type="button">Browse</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="alias" type="text" placeholder="Alias">
+                    <label for="alias">Alias</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="pwd" type="password" placeholder="Password" required>
+                    <div class="invalid-feedback">
+                        Password is required.
+                    </div>
+                    <label for="pwd">Password</label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-10 form-label-group">
+                    <input class="form-control opensslutils" id="repwd" type="password" placeholder="Confirm password" required>
+                    <div class="invalid-feedback">
+                            Password and Confirm password doesn't match.
+                    </div>
+                    <label for="repwd">Confirm password</label>
+                </div>
+            </div>
+        </form>
+        <button id="btn-submit" class="btn btn-outline-primary">Generate</button>
+    </div>
+</body>
+</html>
