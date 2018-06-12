@@ -1,12 +1,7 @@
 import converters from './lib/converters';
 import generators from './lib/generators';
-import openssl from './lib/openssl';
 import preview from './lib/preview';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as vscode from 'vscode';
-
-
 
 
 export function activate(context: vscode.ExtensionContext) {
