@@ -61,4 +61,4 @@ This is the first public release.
 
 ## License
 
-Py Files Generator is licensed under the MIT license.
+OpenSSL Utils is licensed under the MIT license.

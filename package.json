@@ -2,13 +2,12 @@
     "name": "opensslutils",
     "displayName": "opensslutils",
     "description": "",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "ffaraone",
     "engines": {
         "vscode": "^1.23.0"
     },
     "license": "SEE LICENSE IN LICENSE.md",
-    "icon": "images/opensslutils_icon.png",
     "galleryBanner": {
         "color": "#1289B9",
         "theme": "dark"
@@ -21,9 +20,7 @@
         "openssl",
         "certificate",
         "self-signed",
-        "csr",
-        "der",
-        "pem"
+        "PKCS#12"
     ],
     "repository": {
         "url": "https://github.com/ffaraone/vscode-opensslutils.git"
