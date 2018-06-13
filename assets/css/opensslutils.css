@@ -19,8 +19,18 @@ body.vscode-dark .opensslutils {
     border-right: none;
     border-radius: 0;
     box-shadow: none;
-    border-bottom: 1px solid white; 
+    border-bottom: 1px solid white;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
 }
+body.vscode-dark select.opensslutils {
+  padding-left: 0px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232171ca'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 10px) center;
+  background-repeat: no-repeat;
+}
+
 
 
 :root {
@@ -57,6 +67,7 @@ body.vscode-dark .opensslutils {
     transition: all .1s ease-in-out;
   }
   
+
   body.vscode-dark .form-label-group input::-webkit-input-placeholder {
     color: transparent;
   }

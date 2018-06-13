@@ -13,7 +13,7 @@
     <div class="pure-g">
         <div class="pure-u-1-5"></div>
         <div class="pure-u-3-5">
-            <h1>Self-signed Certificate and Key generator</h1>
+            <h1>Csr generator</h1>
         </div>
     </div>
     <div class="pure-g">
@@ -25,23 +25,9 @@
                         <label for="keyLength">Key length</label>
                         <select id="keyLength" class="pure-input-2-3 opensslutils-input">
                             <option value="1024">1024 bits</option>
-                            <option value="2048" selected>2048 bits</option>
+                            <option value="2048">2048 bits</option>
                             <option value="4096">4096 bits</option>
                         </select>
-                    </div>
-                    <div class="pure-control-group">
-                        <label for="hashAlgo">Hash algo</label>
-                        <select id="hashAlgo" class="pure-input-2-3 opensslutils-input">
-                            <option value="-sha1">SHA1</option>
-                            <option value="-sha224">SHA224</option>
-                            <option value="-sha256" selected>SHA256</option>
-                            <option value="-sha384">SHA384</option>
-                            <option value="-sha512">SHA512</option>
-                        </select>
-                    </div>
-                    <div class="pure-control-group">
-                        <label for="days">Days</label>
-                        <input class="pure-input-2-3 opensslutils-input" id="days" type="number" min="1" value="365">
                     </div>
                     <div class="pure-control-group">
                         <label for="commonName">Common Name</label>
@@ -335,8 +321,6 @@
         function submitData() {
             vscode.postMessage({
                 keyLength: document.getElementById('keyLength').value,
-                hashAlgo: document.getElementById('hashAlgo').value,
-                days: document.getElementById('days').value,
                 commonName: document.getElementById('commonName').value,
                 email: document.getElementById('email').value,
                 organization: document.getElementById('organization').value,
