@@ -63,18 +63,31 @@ export function generatePrivKey() {
 
 function getKeyCsrGenerator(extensionPath: string) {
     return () => {
-        let pureCssUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'pure-min.css'));
-        pureCssUri = pureCssUri.with({scheme: 'vscode-resource'});
+		let bsCssUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'css', 'bootstrap.min.css'));
+		bsCssUri = bsCssUri.with({scheme: 'vscode-resource'});
 
-        let extCssUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'opensslutils.css'));
-        extCssUri = extCssUri.with({scheme: 'vscode-resource'});
+		let extCssUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'css', 'opensslutils.css'));
+		extCssUri = extCssUri.with({scheme: 'vscode-resource'});
+        
+        let jqueryJsUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'js', 'jquery-3.0.0.slim.min.js'));
+        jqueryJsUri = jqueryJsUri.with({scheme: 'vscode-resource'});
+
+
+        let bsJsUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'js', 'bootstrap.bundle.min.js'));
+        bsJsUri = bsJsUri.with({scheme: 'vscode-resource'});
+
+        let extJsUri = vscode.Uri.file(path.join(extensionPath, 'assets', 'js', 'opensslutils_gencsr.js'));
+        extJsUri = extJsUri.with({scheme: 'vscode-resource'});
         
         let panel = vscode.window.createWebviewPanel('openssl gen', 'Generate CSR', vscode.ViewColumn.One, {
             enableScripts: true
         });
-        let html = fs.readFileSync(path.join(extensionPath, 'assets', 'gencsr.html')).toString();
-        html = html.replace('${pure_css_uri}', pureCssUri.toString());
+        let html = fs.readFileSync(path.join(extensionPath, 'assets', 'gencsr_bootstrap.html')).toString();
+		html = html.replace('${bs_css_uri}', bsCssUri.toString());
         html = html.replace('${ext_css_uri}', extCssUri.toString());
+        html = html.replace('${jquery_js_uri}', jqueryJsUri.toString());
+        html = html.replace('${bs_js_uri}', bsJsUri.toString());
+        html = html.replace('${ext_js_uri}', extJsUri.toString());
         panel.webview.html = html;
         panel.webview.onDidReceiveMessage((message) => {
             // validate input
