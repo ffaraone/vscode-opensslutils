@@ -4,12 +4,39 @@ OpenSSL utils allows you to invoke the most frequent OpenSSL commands directly f
 
 ## Features
 
+### Generate Private Key
+
+
+![Generate Key and Csr](images/privkey.gif)
+
+
 ### Generate RSA Private Key and Certificate Signing Request 
 
 
-![feature X\](./images/keycsr.gif)
+![Generate Key and Csr](images/keycsr.gif)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Generate self-signed Certificate and Private Key
+
+
+![Generate Self-signed](images/selfsigned.gif)
+
+
+### Certificate and CSR preview
+
+![Preview](images/preview.gif)
+
+### Export PKCS#12
+
+
+![P12](images/p12.gif)
+
+
+### Convert PEM encoded Certificate to DER
+![PEM2DER](images/pem2der.gif)
+
+### Convert DER encoded Certificate to PEM
+![DER2PEM](images/der2pem.gif)
+
 
 ## Requirements
 
@@ -26,3 +53,12 @@ At the time of writing this README there are no known issues.
 
 This is the first public release.
 
+
+## Contributors
+
+* Omar de Mingo
+* Fabrizio Balsamo
+
+## License
+
+Py Files Generator is licensed under the MIT license.

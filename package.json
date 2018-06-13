@@ -7,9 +7,28 @@
     "engines": {
         "vscode": "^1.23.0"
     },
+    "license": "SEE LICENSE IN LICENSE.md",
+    "icon": "images/opensslutils_icon.png",
+    "galleryBanner": {
+        "color": "#1289B9",
+        "theme": "dark"
+    },
     "categories": [
         "Other"
     ],
+    "keywords": [
+        "ssl",
+        "openssl",
+        "certificate",
+        "self-signed",
+        "csr",
+        "der",
+        "pem"
+    ],
+    "repository": {
+        "url": "https://github.com/ffaraone/vscode-opensslutils.git"
+    },
+    "homepage": "https://github.com/ffaraone/vscode-opensslutils/blob/master/README.md",
     "activationEvents": [
         "onCommand:opensslutils.showOpenSSLPreview",
         "onCommand:opensslutils.convertCrtToPem",

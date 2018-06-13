@@ -5,7 +5,6 @@ $(document).ready(() => {
         $('#repwd').attr('pattern', el.value);
     });
     window.addEventListener('message', (msg) => {
-        console.log('message received');
         if (msg.data.command.startsWith('set-')) {
             const what = msg.data.command.substring(4);
             document.getElementById(what).value = msg.data.file;
@@ -13,7 +12,6 @@ $(document).ready(() => {
     });
     for (let what of ['key', 'cert', 'bundle']) {
         $(`#${what}`).focusin(() => {
-            console.log('focus event !!');
             $(`#${what}`).prop('readonly', true);
         });
         $(`#btn-${what}`).click(() => {

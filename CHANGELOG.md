@@ -1,7 +1,5 @@
-# Change Log
-All notable changes to the "opensslutils" extension will be documented in this file.
+# OpenSSL Utils
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.0.0] - 05/28/2018
 - Initial release

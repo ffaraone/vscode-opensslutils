@@ -206,7 +206,6 @@ function getP12Generator(extensionPath: string) {
 					openLabel: 'Choose',
 				}).then((res: vscode.Uri[] | undefined) => {
 					if (res) {
-						console.log(res);
 						panel.webview.postMessage({
 							command: `set-${what}`,
 							file: res[0].path
