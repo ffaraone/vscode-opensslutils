@@ -38,6 +38,22 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "configuration": [
+            {
+                "type": "object",
+                "title": "OpenSSL Utils configuration",
+                "properties": {
+                    "opensslutils.opensslPath": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Full path to the openssl executable"
+                    }
+                }
+            }
+        ],
         "commands": [
             {
                 "command": "opensslutils.showOpenSSLPreview",

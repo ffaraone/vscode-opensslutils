@@ -6,10 +6,9 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 
-let opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
-
 
 function crtToPem(infile:string, outfile:string): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     return new Promise((resolve, reject) => {
         exec(`${opensslExec} x509 -in ${infile} -inform der -out ${outfile}`, (err, stdout, stderr) => {
             if (err) {
@@ -25,6 +24,7 @@ function crtToPem(infile:string, outfile:string): Promise<any> {
 }
 
 function pemToCrt(infile:string, outfile:string): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     return new Promise((resolve, reject) => {
         exec(`${opensslExec} x509 -in ${infile} -outform der -out ${outfile}`, (err, stdout, stderr) => {
             if (err) {
@@ -40,6 +40,7 @@ function pemToCrt(infile:string, outfile:string): Promise<any> {
 }
 
 function genPrivKey(size: number, algo: string): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     let cmd = `${opensslExec}`;
     if (algo === 'rsa') {
         cmd += ` genrsa ${size}`;
@@ -58,6 +59,7 @@ function genPrivKey(size: number, algo: string): Promise<any> {
 }
 
 function genP12(data: any): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     let cmd = `${opensslExec} pkcs12 -export -out ${data.p12} -inkey ${data.key} -in ${data.cert} -password pass:${data.pwd}`;
     if (data.bundle) {
         cmd += ` -certfile ${data.bundle}`;
@@ -77,6 +79,7 @@ function genP12(data: any): Promise<any> {
 }
 
 function genKeyCsr(data:any): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
     const tmpCsr = path.join(os.tmpdir(), `op_${rndStr}.csr`);
@@ -126,6 +129,7 @@ function genKeyCsr(data:any): Promise<any> {
 }
 
 function genSelfSignedCert(data:any): Promise<any> {
+    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
     const tmpPem = path.join(os.tmpdir(), `op_${rndStr}.pem`);

@@ -2,6 +2,12 @@
 
 OpenSSL utils allows you to invoke the most frequent OpenSSL commands directly from Visual Studio Code.
 
+
+## Configuration
+
+If openssl in not on your path you can change the `opensslutils.opensslPath` setting to provide the full path to the openssl executable.
+
+
 ## Features
 
 ### Generate Private Key
@@ -49,9 +55,11 @@ At the time of writing this README there are no known issues.
 
 ## Release Notes
 
-### 1.0.0
+### 1.0.1
 
-This is the first public release.
+* Fix a css issue on Windows
+* Add a setting to specify the full path to the openssl executable.
+* Using the PKCS#12 export command, show an error message if no workspace has been opened.
 
 
 ## Contributors
