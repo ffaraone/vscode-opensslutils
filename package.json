@@ -2,7 +2,7 @@
     "name": "opensslutils",
     "displayName": "opensslutils",
     "description": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "ffaraone",
     "engines": {
         "vscode": "^1.23.0"

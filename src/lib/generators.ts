@@ -165,6 +165,7 @@ function getSelfSignedCertGenerator(extensionPath: string) {
 function getP12Generator(extensionPath: string) {
     return () => {
 		if (!vscode.workspace.workspaceFolders) {
+            vscode.window.showErrorMessage('You must have a workspace opened');
 			return;
 		}
 		const folder = vscode.workspace.workspaceFolders[0].uri;

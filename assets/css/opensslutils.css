@@ -31,7 +31,9 @@ body.vscode-dark select.opensslutils {
   background-repeat: no-repeat;
 }
 
-
+body.vscode-dark select.opensslutils option {
+  color: black;
+}
 
 :root {
     --input-padding-x: .75rem;
@@ -126,6 +128,15 @@ body.vscode-light .opensslutils {
     border-bottom: 1px solid black; 
 }
 
+body.vscode-light select.opensslutils {
+  padding-left: 0px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232171ca'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 10px) center;
+  background-repeat: no-repeat;
+}
+
+
 
   body.vscode-light .form-label-group {
     position: relative;
@@ -212,6 +223,14 @@ body.vscode-high-contrast .opensslutils {
     border-radius: 0;
     box-shadow: none;
     border-bottom: 1px solid white; 
+}
+
+body.vscode-high-contrast select.opensslutils {
+  padding-left: 0px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%232171ca'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 10px) center;
+  background-repeat: no-repeat;
 }
 
 
