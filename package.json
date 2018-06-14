@@ -7,6 +7,7 @@
     "engines": {
         "vscode": "^1.23.0"
     },
+    "icon": "images/opensslutils_logo.png",
     "license": "SEE LICENSE IN LICENSE.md",
     "galleryBanner": {
         "color": "#1289B9",
