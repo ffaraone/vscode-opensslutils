@@ -16,9 +16,11 @@ function sanitizePath(p:string) {
     if (!useWsl) {
         return p;
     }
-    const parsed = path.parse(p);
+    const parsed: any = path.parse(p);
     const driveLetter: string = parsed.root.split(':')[0];
-    return path.join('/mnt', driveLetter.toLowerCase(), parsed.dir, parsed.base);
+    let components: string[] = p.split(path.sep);
+    components = components.splice(1);
+    return path.posix.join('/mnt', driveLetter.toLowerCase(), ...components);
 }
 
 
