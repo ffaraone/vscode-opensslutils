@@ -1,14 +1,30 @@
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
+let opensslExec: string = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
+const useWsl: boolean = (vscode.workspace.getConfiguration('opensslutils').get('useWsl') || false) && process.platform === 'win32';
+
+if (useWsl) {
+    opensslExec = 'wsl ' + opensslExec;
+}
+
+function sanitizePath(p:string) {
+    if (!useWsl) {
+        return p;
+    }
+    const parsed = path.parse(p);
+    const driveLetter: string = parsed.root.split(':')[0];
+    return path.join('/mnt', driveLetter.toLowerCase(), parsed.dir, parsed.base);
+}
 
 
 function crtToPem(infile:string, outfile:string): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
+    infile = sanitizePath(infile);
+    outfile = sanitizePath(outfile);
     return new Promise((resolve, reject) => {
         exec(`${opensslExec} x509 -in ${infile} -inform der -out ${outfile}`, (err, stdout, stderr) => {
             if (err) {
@@ -24,7 +40,8 @@ function crtToPem(infile:string, outfile:string): Promise<any> {
 }
 
 function pemToCrt(infile:string, outfile:string): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
+    infile = sanitizePath(infile);
+    outfile = sanitizePath(outfile);
     return new Promise((resolve, reject) => {
         exec(`${opensslExec} x509 -in ${infile} -outform der -out ${outfile}`, (err, stdout, stderr) => {
             if (err) {
@@ -40,7 +57,6 @@ function pemToCrt(infile:string, outfile:string): Promise<any> {
 }
 
 function genPrivKey(size: number, algo: string): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     let cmd = `${opensslExec}`;
     if (algo === 'rsa') {
         cmd += ` genrsa ${size}`;
@@ -59,7 +75,9 @@ function genPrivKey(size: number, algo: string): Promise<any> {
 }
 
 function genP12(data: any): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
+    data.p12 = sanitizePath(data.p12);
+    data.key = sanitizePath(data.key);
+    data.cert = sanitizePath(data.cert);
     let cmd = `${opensslExec} pkcs12 -export -out ${data.p12} -inkey ${data.key} -in ${data.cert} -password pass:${data.pwd}`;
     if (data.bundle) {
         cmd += ` -certfile ${data.bundle}`;
@@ -79,10 +97,11 @@ function genP12(data: any): Promise<any> {
 }
 
 function genKeyCsr(data:any): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
     const tmpCsr = path.join(os.tmpdir(), `op_${rndStr}.csr`);
+    const sanTmpKey = sanitizePath(tmpKey);
+    const sanTmpCsr = sanitizePath(tmpCsr);
 
     let subj = `/CN=${data.commonName}/C=${data.country}`;
     if (data.state) {
@@ -103,7 +122,7 @@ function genKeyCsr(data:any): Promise<any> {
     subj = '"' + subj + '"';
 
     return new Promise((resolve, reject) => {
-        const cmd = `${opensslExec} req -new -newkey rsa:${data.keyLength} -keyout ${tmpKey} -out ${tmpCsr} -nodes -subj ${subj}`;
+        const cmd = `${opensslExec} req -new -newkey rsa:${data.keyLength} -keyout ${sanTmpKey} -out ${sanTmpCsr} -nodes -subj ${subj}`;
         exec(cmd, (err, stdout, stderr) => {
             if (err) {
                 reject(err);
@@ -129,11 +148,11 @@ function genKeyCsr(data:any): Promise<any> {
 }
 
 function genSelfSignedCert(data:any): Promise<any> {
-    const opensslExec = vscode.workspace.getConfiguration('opensslutils').get('opensslPath') || 'openssl';
     const rndStr = crypto.randomBytes(10).toString('hex');
     const tmpKey = path.join(os.tmpdir(), `op_${rndStr}.key`);
     const tmpPem = path.join(os.tmpdir(), `op_${rndStr}.pem`);
-
+    const sanTmpKey = sanitizePath(tmpKey);
+    const sanTmpPem = sanitizePath(tmpPem);
     let subj = `/CN=${data.commonName}/C=${data.country}`;
     if (data.state) {
         subj += `/ST=${data.state}`;
@@ -153,7 +172,7 @@ function genSelfSignedCert(data:any): Promise<any> {
     subj = '"' + subj + '"';
 
     return new Promise((resolve, reject) => {
-        const cmd = `${opensslExec} req -x509 ${data.hashAlgo} -nodes -days ${data.days} -newkey rsa:${data.keyLength} -keyout ${tmpKey} -out ${tmpPem} -subj ${subj}`;
+        const cmd = `${opensslExec} req -x509 ${data.hashAlgo} -nodes -days ${data.days} -newkey rsa:${data.keyLength} -keyout ${sanTmpKey} -out ${sanTmpPem} -subj ${subj}`;
         exec(cmd, (err, stdout, stderr) => {
             if (err) {
                 reject(err);
@@ -178,13 +197,27 @@ function genSelfSignedCert(data:any): Promise<any> {
     });
 }
 
+function parsePem(text:string):string {
+    return execSync(`${opensslExec} x509 -text -noout`, {
+        input: text
+    }).toString('utf-8');
+} 
+
+function parseCsr(text:string):string {
+    return execSync(`${opensslExec} req -text -noout`, {
+        input: text
+    }).toString('utf-8');
+} 
+
 const openssl = {
     crtToPem: crtToPem,
     pemToCrt: pemToCrt,
     genKeyCsr: genKeyCsr,
     genPrivKey: genPrivKey,
     genSelfSignedCert: genSelfSignedCert,
-    genP12: genP12
+    genP12: genP12,
+    parsePem: parsePem,
+    parseCsr: parseCsr
 };
 
 export default openssl;

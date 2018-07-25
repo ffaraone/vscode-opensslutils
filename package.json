@@ -50,6 +50,13 @@
                         ],
                         "default": null,
                         "description": "Full path to the openssl executable"
+                    },
+                    "opensslutils.useWsl": {
+                        "type": [
+                            "boolean"
+                        ],
+                        "default": false,
+                        "description": "Use OpenSSL via Windows Subsystem for Linux"
                     }
                 }
             }
