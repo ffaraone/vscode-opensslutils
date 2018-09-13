@@ -1,5 +1,8 @@
 # OpenSSL Utils
 
+## [1.1.0] - 09/13/2018
+
+* Add support to use WSL on Windows
 
 ## [1.0.1] - 06/14/2018
 
