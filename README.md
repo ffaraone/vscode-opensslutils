@@ -6,7 +6,7 @@ OpenSSL utils allows you to invoke the most frequent OpenSSL commands directly f
 ## Configuration
 
 If openssl in not on your path you can change the `opensslutils.opensslPath` setting to provide the full path to the openssl executable.
-
+For Windows users: in order to use OpenSSL through Windows Subsystem for Linux (WSL) you must set `opensslutils.useWsl` to true.
 
 ## Features
 
@@ -54,6 +54,11 @@ You must have OpenSSL 0.9.8 or greater in your PATH.
 At the time of writing this README there are no known issues.
 
 ## Release Notes
+
+### 1.1.1
+
+* add support to use openssl through Windows Subsystem for Linux on Windows
+
 
 ### 1.0.1
 
