@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import openssl from './openssl';
 import * as vscode from 'vscode';
 
 
@@ -25,13 +25,9 @@ export class OpenSSLTextDocumentContentProvider implements vscode.TextDocumentCo
             }
             const text = editor.document.getText().trim();
             if (text.startsWith('-----BEGIN CERTIFICATE-----')) {
-                return execSync('openssl x509 -text -noout', {
-                    input: text
-                }).toString('utf-8');
+                return openssl.parsePem(text);
             } else if (text.startsWith('-----BEGIN CERTIFICATE REQUEST-----') || text.startsWith('-----BEGIN NEW CERTIFICATE REQUEST-----')) {
-                return execSync('openssl req -text -noout', {
-                    input: text
-                }).toString('utf-8');				
+                return openssl.parseCsr(text);			
 			}
             return 'Preview not available';
         }
