@@ -199,6 +199,12 @@ function genSelfSignedCert(data:any): Promise<any> {
     });
 }
 
+function parsePkey(text:string):string {
+    return execSync(`${opensslExec} pkey -text -noout`, {
+        input: text
+    }).toString('utf-8');
+}
+
 function parsePem(text:string):string {
     return execSync(`${opensslExec} x509 -text -noout`, {
         input: text
@@ -218,6 +224,7 @@ const openssl = {
     genPrivKey: genPrivKey,
     genSelfSignedCert: genSelfSignedCert,
     genP12: genP12,
+    parsePkey: parsePkey,
     parsePem: parsePem,
     parseCsr: parseCsr
 };

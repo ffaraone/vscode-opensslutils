@@ -28,6 +28,8 @@ export class OpenSSLTextDocumentContentProvider implements vscode.TextDocumentCo
                 return openssl.parsePem(text);
             } else if (text.startsWith('-----BEGIN CERTIFICATE REQUEST-----') || text.startsWith('-----BEGIN NEW CERTIFICATE REQUEST-----')) {
                 return openssl.parseCsr(text);			
+            } else if (text.startsWith('-----BEGIN PRIVATE KEY-----') || text.startsWith('-----BEGIN RSA PRIVATE KEY-----')) {
+                return openssl.parsePkey(text);
 			}
             return 'Preview not available';
         }
